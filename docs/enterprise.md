@@ -11,7 +11,8 @@
 
 | Goal | How | Who can turn it off |
 |---|---|---|
-| Try it | Customize → Plugins → From GitHub Repository | the developer |
+| Each developer, once: every project, self-updating | `git clone … ~/.cursor-agent-skills && python3 ~/.cursor-agent-skills/scripts/install.py` | the developer |
+| Try it as a plugin | Customize → Plugins → From GitHub Repository | the developer |
 | Same versions for everyone working on a repository, including CI and Cloud Agents | `install.py --scope project`, commit `.cursor/` | anyone who can change the repository (protect it with CODEOWNERS) |
 | Company-curated catalogue | Add this repository to your **team marketplace**; teammates install from it | the developer |
 | Guardrails nobody can disable on managed machines | `install.py --scope enterprise --fail-closed`, deployed by MDM | administrators only |
@@ -22,7 +23,7 @@ Enterprise hooks take priority over team, project and user hooks. If several hoo
 1. Package `plugins/secure-guardrails/scripts/guard.py`, or the release zip `secure-guardrails-<version>.zip`, with your MDM tool.
 2. On each machine, run as administrator:
    `python3 scripts/install.py --scope enterprise --fail-closed`
-   This writes `hooks.json` and `hooks/secure-guardrails/guard.py` into Cursor's system folder: `/etc/cursor` (Linux/WSL), `/Library/Application Support/Cursor` (macOS) or `C:\ProgramData\Cursor` (Windows).
+   This writes `hooks.json`, the guardrail script and the session-start hook that adds the security rule to every chat into Cursor's system folder: `/etc/cursor` (Linux/WSL), `/Library/Application Support/Cursor` (macOS) or `C:\ProgramData\Cursor` (Windows).
 3. Make sure Python 3 is part of your standard developer image. With `--fail-closed`, a missing Python blocks the guarded actions instead of silently skipping the checks.
 4. To update, deploy the new version and run the same command.
 

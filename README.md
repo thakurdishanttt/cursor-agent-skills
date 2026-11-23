@@ -7,8 +7,8 @@
 | **Plugins** | `secure-coding`: 6 skills, 2 rules, 2 read-only subagents · `secure-guardrails`: 4 security hooks |
 | **Standards** | OWASP Top 10 for LLM Applications 2025 · OWASP Top 10 for Agentic Applications 2026 · OWASP ASVS L2 |
 | **Works in** | Cursor 2.4+ editor, Cursor CLI (`agent`) and Cloud Agents (repo-installed skills) |
-| **Install** | From GitHub in Cursor, a team marketplace, per repository, per user, or system-wide through MDM |
-| **Quality gate** | 164 automated tests on Linux, macOS and Windows; 12 eval cases in real headless Cursor sessions ([details](docs/quality.md)) |
+| **Setup** | **Once per machine**: works in every project and updates itself. Also available as a Cursor plugin, per repository, or company-wide through MDM |
+| **Quality gate** | 169 automated tests on Linux, macOS and Windows; 12 eval cases in real headless Cursor sessions ([details](docs/quality.md)) |
 | **Integrations** | SARIF 2.1.0 for GitHub code scanning · organization rules in `.security/rules.md` and `.security/guardrails.json` · releases with SHA256SUMS |
 | **Owner** | Thakur Dishant Kumar |
 
@@ -42,19 +42,27 @@
 
 Messages name the kind of credential but never repeat it. Nothing is logged or sent anywhere.
 
-## Install
+## One-time setup
 
-**In Cursor:** open Customize → Plugins, choose **From GitHub Repository**, enter `thakurdishanttt/cursor-agent-skills`, then install `secure-coding` and, if you want the hooks, `secure-guardrails`.
-
-**Per repository** (recommended for teams, because everyone gets the same versions):
+Run once. From then on it works in **every project you open**, with nothing to set up per project, and it updates itself.
 
 ```bash
-git clone https://github.com/thakurdishanttt/cursor-agent-skills.git
-python3 cursor-agent-skills/scripts/install.py --scope project --project-dir ./my-service
-cd my-service && git add .cursor && git commit -m "Add security skills, rules and guardrails"
+git clone https://github.com/thakurdishanttt/cursor-agent-skills.git ~/.cursor-agent-skills
+python3 ~/.cursor-agent-skills/scripts/install.py
 ```
 
-**Per developer:** `python3 scripts/install.py`. **Every user on a machine, through MDM:** `sudo python3 scripts/install.py --scope enterprise`. **Cursor CLI:** `agent --plugin-dir ./plugins/secure-coding`.
+Restart Cursor. You now have, in every project:
+- the six skills and both subagents (`~/.cursor/skills/`, `~/.cursor/agents/`);
+- the guardrail hooks (`~/.cursor/hooks.json`);
+- the always-on security rule, added to every Agent chat by a session-start hook, because Cursor has no file-based user rules;
+- daily background updates to the newest release. Updates never downgrade, never overwrite your local edits, and can be switched off with `--no-auto-update` or `CURSOR_AGENT_SKILLS_AUTO_UPDATE=0`.
+
+On Windows, use `py -3` in place of `python3` and clone to `%USERPROFILE%\.cursor-agent-skills`.
+
+**Other ways to install**
+- **Cursor plugin:** Customize → Plugins → **From GitHub Repository** → `thakurdishanttt/cursor-agent-skills`, then install `secure-coding` and, if you want the hooks, `secure-guardrails`. This also covers every project. Use either the plugin or the installer, not both, or the security rule loads twice.
+- **Whole company, through MDM:** `sudo python3 scripts/install.py --scope enterprise`. Users cannot turn off these guardrails.
+- **Pin one repository's versions** (optional): `install.py --scope project --project-dir ./my-service`, then commit `.cursor/`. Use this when CI or Cloud Agents must run the same version as developers.
 
 All options, Windows notes and verification: [docs/installation.md](docs/installation.md).
 
@@ -97,7 +105,8 @@ plugins/
   secure-coding/                   .cursor-plugin/plugin.json, skills/, rules/, agents/, assets/
   secure-guardrails/               .cursor-plugin/plugin.json, hooks/hooks.json, scripts/guard.py
 scripts/
-  install.py                       install / update / list / remove: user, project or enterprise scope
+  install.py                       one-time setup for every project (+ auto-update); project or enterprise scope
+  session_start.py                 hook that adds the security rule to every chat and checks for updates daily
   validate.py                      marketplace, plugins, skills, rules, subagents and hooks against Cursor's formats
   run_evals.py                     eval suite in real headless Cursor sessions (needs CURSOR_API_KEY)
   package.py                       reproducible plugin and skill zips + SHA256SUMS
