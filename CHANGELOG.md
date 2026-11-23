@@ -11,6 +11,6 @@ All notable changes. Each skill also carries its own `metadata.version`, and eac
 - `.cursor-plugin/marketplace.json`, so Cursor can import the repository from GitHub or a team marketplace.
 - `scripts/install.py`: user, project and enterprise (MDM) scope; safe `hooks.json` merging; `--fail-closed`; `--list`; `--uninstall`.
 - `scripts/validate.py`: checks every component against Cursor's documented formats, budgets, licences, secrets and executables.
-- 164 tests (`tests/`) run on Linux, macOS and Windows with Python 3.9 and 3.13.
+- 164 tests (`tests/`) run on Linux, macOS and Windows with Python 3.10 and 3.13.
 - `scripts/run_evals.py`: 12 eval cases in real headless Cursor sessions, with the plugin loaded through `--plugin-dir`.
 - Reproducible release zips with `SHA256SUMS`, a weekly sync of the standard, and the enterprise, installation, customization, CI, compliance, quality and architecture docs.

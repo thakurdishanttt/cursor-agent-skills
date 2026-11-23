@@ -2,7 +2,7 @@
 
 ## Requirements
 - Cursor 2.4 or later (skills, subagents and plugins).
-- Python 3.9 or later, for the `secure-guardrails` hooks and the installer script. The skills, rules and subagents themselves are plain Markdown.
+- Python 3.10 or later, for the `secure-guardrails` hooks and the installer script. The skills, rules and subagents themselves are plain Markdown.
 
 ## Option 1: install the plugins in Cursor
 1. In Cursor, open **Customize → Plugins**.

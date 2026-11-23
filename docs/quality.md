@@ -6,7 +6,7 @@
 - **False positives are failures.** A review that cries wolf, or a guardrail that blocks everyday work, gets switched off. Both are tested.
 - **Budgets are enforced in CI:** skill description ≤ 420 characters, `SKILL.md` ≤ ~1,600 tokens, always-on rule ≤ ~500 tokens.
 
-## Layer 1: deterministic tests (`tests/`, every push, Linux, macOS and Windows, Python 3.9 and 3.13)
+## Layer 1: deterministic tests (`tests/`, every push, Linux, macOS and Windows, Python 3.10 and 3.13)
 
 | Suite | Cases | What it proves |
 |---|---|---|

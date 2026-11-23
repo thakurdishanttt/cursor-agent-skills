@@ -26,7 +26,7 @@ Add rules in `.security/guardrails.json` at the repository root. They can only a
 ## Requirements
 
 - Cursor 2.4 or later.
-- Python 3.9 or later on `PATH` as `python3`. On Windows, install from python.org and use `python3 scripts/install.py --python "py -3"`, or make sure `python3` runs.
+- Python 3.10 or later on `PATH` as `python3`. On Windows, install from python.org and use `python3 scripts/install.py --python "py -3"`, or make sure `python3` runs.
 - If Python is missing or a hook crashes, Cursor lets the action proceed (fail-open). For fail-closed, install with `python3 scripts/install.py --fail-closed`, or deploy the hooks as enterprise hooks ([docs/enterprise.md](../../docs/enterprise.md)).
 
 Tested by 135 unit tests covering both blocked attacks and ordinary commands that must still work (`tests/test_guard.py`).
