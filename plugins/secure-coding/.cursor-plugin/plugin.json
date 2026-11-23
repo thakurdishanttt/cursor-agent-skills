@@ -1,0 +1,11 @@
+{
+  "name": "secure-coding",
+  "version": "1.0.0",
+  "description": "Enterprise security skills, rules and subagents for Cursor: secure code review, threat modelling, dependency vetting, IaC review and gated feature builds against OWASP LLM Top 10 2025, Agentic Top 10 2026 and ASVS L2.",
+  "author": { "name": "Thakur Dishant Kumar", "email": "thakurdishant1853@gmail.com" },
+  "homepage": "https://github.com/thakurdishanttt/cursor-agent-skills",
+  "repository": "https://github.com/thakurdishanttt/cursor-agent-skills",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": ["security", "owasp", "code-review", "threat-model", "sarif", "enterprise"],
+  "logo": "assets/logo.svg"
+}

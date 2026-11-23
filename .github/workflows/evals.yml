@@ -1,0 +1,61 @@
+# Real Cursor Agent sessions with the plugin loaded from this repo. Runs on PRs
+# that change skills, rules, agents or evals, and by hand. Needs the
+# CURSOR_API_KEY secret (Cursor dashboard → Integrations → API Keys). Forks
+# don't get secrets, so the run is skipped there.
+name: Evals
+
+on:
+  pull_request:
+    paths: ["plugins/secure-coding/**", "evals/**", "scripts/run_evals.py"]
+  workflow_dispatch:
+    inputs:
+      repeat:
+        description: Runs per case
+        default: "1"
+      model:
+        description: Cursor model id (empty = account default)
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: evals-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+      REPEAT: ${{ inputs.repeat || '1' }}
+      EVAL_MODEL: ${{ inputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Skip without a key
+        id: key
+        run: |
+          if [ -z "$CURSOR_API_KEY" ]; then
+            echo "::warning::No CURSOR_API_KEY secret; Cursor evals skipped."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install Cursor CLI
+        if: steps.key.outputs.skip != 'true'
+        run: |
+          curl -fsS https://cursor.com/install | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Run evals
+        if: steps.key.outputs.skip != 'true'
+        run: |
+          case "$REPEAT" in ''|*[!0-9]*) echo "repeat must be a number"; exit 1 ;; esac
+          agent --version
+          python3 scripts/run_evals.py --jobs 6 --repeat "$REPEAT" --json evals-results.json | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.key.outputs.skip != 'true'
+        with:
+          name: evals-results
+          path: evals-results.json
+          if-no-files-found: ignore

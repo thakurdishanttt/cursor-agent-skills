@@ -1,0 +1,28 @@
+{
+  "name": "cursor-agent-skills",
+  "owner": {
+    "name": "Thakur Dishant Kumar",
+    "email": "thakurdishant1853@gmail.com"
+  },
+  "metadata": {
+    "description": "Enterprise security for Cursor: skills, rules and subagents that review, design and build code against OWASP's LLM, Agentic and application-security standards, plus deterministic guardrail hooks.",
+    "version": "1.0.0",
+    "pluginRoot": "plugins"
+  },
+  "plugins": [
+    {
+      "name": "secure-coding",
+      "source": "secure-coding",
+      "description": "Six security skills, an always-on security baseline rule, an infrastructure rule, and read-only security-reviewer and threat-modeler subagents.",
+      "category": "security",
+      "tags": ["security", "owasp", "code-review", "threat-model", "appsec", "ai-security"]
+    },
+    {
+      "name": "secure-guardrails",
+      "source": "secure-guardrails",
+      "description": "Hooks that block credentials in prompts and MCP calls, deny reading secret files, block dangerous shell commands and ask before irreversible ones.",
+      "category": "security",
+      "tags": ["security", "hooks", "secrets", "guardrails", "compliance"]
+    }
+  ]
+}

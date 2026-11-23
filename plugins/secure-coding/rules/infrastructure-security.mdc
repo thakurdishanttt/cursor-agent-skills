@@ -1,0 +1,13 @@
+---
+description: Infrastructure, container and CI pipeline security rules
+globs: ["**/*.tf", "**/*.tfvars.example", "**/Dockerfile*", "**/*compose*.y*ml", "**/k8s/**/*.y*ml", "**/kubernetes/**/*.y*ml", "**/helm/**", "**/charts/**", "**/.github/workflows/*.y*ml", "**/*.template.json", "**/*cloudformation*"]
+alwaysApply: false
+---
+Infrastructure and pipeline rules (secure-coding plugin):
+
+- No `0.0.0.0/0` ingress except ports 80/443 on a load balancer. No public databases, buckets or snapshots. Encrypt at rest and in transit.
+- IAM and service accounts: no `*` actions or resources; scope to the exact resources used.
+- Containers: pin base images by digest or exact tag, run as a non-root user, no `privileged`, drop capabilities, read-only root filesystem where possible, set resource limits.
+- GitHub Actions: pin third-party actions to a full commit SHA, set least-privilege `permissions:`, never use `pull_request_target` with a checkout of the PR head, never interpolate `${{ github.event.* }}` into `run:`; pass it through `env:`.
+- Secrets come from a secret store, never from variables, files in the repo or image layers.
+- Before finishing infrastructure changes, run the `iac-security-review` skill.

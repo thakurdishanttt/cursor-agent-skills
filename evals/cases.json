@@ -1,0 +1,270 @@
+{
+  "_comment": "Each case runs Claude Code headless in a temp copy of its fixture with ALL skills installed, so skill selection is tested too. 'base' is committed first; 'change' (if any) is applied on top as the diff to review. 'skill' is the skill that must be used (null = none). Patterns are case-insensitive regexes on the final answer.",
+  "cases": [
+    {
+      "id": "review-finds-planted-vulns",
+      "skill": "secure-code-review",
+      "fixture": "flask-vuln",
+      "prompt": "review my changes",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash(git diff:*)",
+        "Bash(git status:*)",
+        "Bash(git log:*)"
+      ],
+      "must": [
+        "BLOCK",
+        "SQL",
+        "(command|shell)[ -]injection|shell=True",
+        "travers"
+      ],
+      "must_not": [
+        "\\bAPPROVE\\b\\s*$"
+      ],
+      "unchanged": true,
+      "max_turns": 15
+    },
+    {
+      "id": "review-no-false-positive",
+      "skill": "secure-code-review",
+      "fixture": "util-clean",
+      "prompt": "review my changes before I merge",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash(git diff:*)",
+        "Bash(git status:*)",
+        "Bash(git log:*)"
+      ],
+      "must": [
+        "APPROVE"
+      ],
+      "must_not": [
+        "\\[(Critical|High)\\]",
+        "Verdict[^\\n]*\\n+[^\\n]*\\*\\*BLOCK"
+      ],
+      "unchanged": true,
+      "max_turns": 15
+    },
+    {
+      "id": "review-sarif-output",
+      "skill": "secure-code-review",
+      "fixture": "flask-vuln",
+      "prompt": "review my changes and output SARIF for our code scanning dashboard",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash(git diff:*)",
+        "Bash(git status:*)",
+        "Bash(git log:*)"
+      ],
+      "must": [
+        "BLOCK"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 15,
+      "sarif_min_results": 3
+    },
+    {
+      "id": "review-enforces-org-rules",
+      "skill": "secure-code-review",
+      "fixture": "org-rules",
+      "prompt": "review my changes",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash(git diff:*)",
+        "Bash(git status:*)",
+        "Bash(git log:*)"
+      ],
+      "must": [
+        "ORG-1",
+        "timeout",
+        "REQUEST CHANGES|BLOCK"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 15
+    },
+    {
+      "id": "review-multi-file-idor",
+      "skill": "secure-code-review",
+      "fixture": "invoices-idor",
+      "prompt": "review my changes",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash(git diff:*)",
+        "Bash(git status:*)",
+        "Bash(git log:*)"
+      ],
+      "must": [
+        "IDOR|insecure direct object|broken object|authori[sz]ation|ownership",
+        "tenant",
+        "BLOCK|REQUEST CHANGES",
+        "service\\.py|repo\\.py|routes\\.py"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 15
+    },
+    {
+      "id": "review-safe-but-scary-no-false-alarm",
+      "skill": "secure-code-review",
+      "fixture": "safe-but-scary",
+      "prompt": "review my changes before I merge",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash(git diff:*)",
+        "Bash(git status:*)",
+        "Bash(git log:*)"
+      ],
+      "must": [
+        "APPROVE"
+      ],
+      "must_not": [
+        "\\[(Critical|High)\\]",
+        "Verdict[^\\n]*\\n+[^\\n]*\\*\\*BLOCK"
+      ],
+      "unchanged": true,
+      "max_turns": 15
+    },
+    {
+      "id": "iac-review-finds-misconfigs",
+      "skill": "iac-security-review",
+      "fixture": "iac-vuln",
+      "prompt": "review our infrastructure changes - terraform, kubernetes, docker and the CI workflow",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Bash(git diff:*)",
+        "Bash(git status:*)",
+        "Bash(git log:*)"
+      ],
+      "must": [
+        "BLOCK",
+        "0\\.0\\.0\\.0/0",
+        "privileged",
+        "pull_request_target",
+        "wildcard|\"\\*\"|`\\*`|\\* actions|Action\\s*[:=]\\s*\"?\\*|allows? everything|full (account )?admin|admin(istrator)? IAM|all actions on all resources",
+        "publicly_accessible|public(ly)? accessible",
+        "(USER|root)",
+        "SHA|pin"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 15
+    },
+    {
+      "id": "threat-model-rag-design",
+      "skill": "threat-model",
+      "fixture": "rag-design",
+      "prompt": "threat model the design in design.md",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob"
+      ],
+      "must": [
+        "LLM01|prompt injection",
+        "tenant",
+        "issue_refund|refund",
+        "LLM06|ASI0?2|excessive agency|tool misuse",
+        "\\|\\s*ID\\s*\\|",
+        "rate limit|LLM10|unbounded"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 12
+    },
+    {
+      "id": "dependency-vetting-known-cve",
+      "skill": "dependency-vetting",
+      "fixture": "lodash-old",
+      "prompt": "we pin lodash 4.17.15 in package.json - is that version safe to keep?",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "must": [
+        "CVE-2020-8203|CVE-2021-23337|CVE-2020-28500|prototype pollution|command injection",
+        "REJECT|ADOPT WITH CONDITIONS|upgrade",
+        "4\\.17\\.2[01]"
+      ],
+      "must_not": [
+        "\\bADOPT\\*{0,2}\\s*\\n(?!.*CONDITIONS)"
+      ],
+      "unchanged": true,
+      "max_turns": 15
+    },
+    {
+      "id": "feature-build-plans-and-waits",
+      "skill": "secure-feature-build",
+      "fixture": "accounts-app",
+      "prompt": "build a password reset flow for this app",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob",
+        "Edit",
+        "Write",
+        "Bash(git status:*)",
+        "Bash(git diff:*)"
+      ],
+      "must": [
+        "threat model",
+        "tier",
+        "approv"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 12
+    },
+    {
+      "id": "standard-answers-logging-question",
+      "skill": "ai-security-standard",
+      "fixture": "flask-app",
+      "prompt": "is it ok to log the full LLM prompt and response in production for debugging?",
+      "tools": [
+        "Read",
+        "Grep",
+        "Glob"
+      ],
+      "must": [
+        "(must not|should not|don't|do not|never|not to log|breaks? a MUST|^\\W*no\\b)",
+        "redact|PII|secret|sensitive"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 8
+    },
+    {
+      "id": "no-skill-for-unrelated-task",
+      "skill": null,
+      "fixture": "flask-app",
+      "prompt": "write a two-line poem about autumn",
+      "tools": [
+        "Read"
+      ],
+      "must": [
+        "\\w"
+      ],
+      "must_not": [],
+      "unchanged": true,
+      "max_turns": 3
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+# Weekly: pull the latest security standard from claude-code-secure-agents into
+# every skill's references/, bump the patch version of changed skills and the
+# plugin, and open a PR for review.
+name: Sync standard from kit
+
+on:
+  schedule:
+    - cron: "53 2 * * 1"     # Mondays 02:53 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Sync
+        run: |
+          python3 scripts/sync_from_kit.py
+          python3 scripts/validate.py
+      - name: Bump versions and open PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          S=plugins/secure-coding/skills
+          changed="$(git diff --name-only -- "$S" | cut -d/ -f4 | sort -u)"
+          [ -n "$changed" ] || { echo "No changes."; exit 0; }
+          python3 scripts/bump.py $changed
+          b="sync/kit-$(date -u +%Y%m%d)"
+          git config user.name "skills-sync-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$b"
+          git add -A plugins .cursor-plugin
+          git commit -qm "Sync security standard from kit ($(cat $S/secure-code-review/references/KIT_VERSION.txt))"
+          git push -q origin "$b"
+          gh pr create --title "Sync standard from kit" --body "Updated skills: $(echo $changed | tr '\n' ' '). After merging, tag the new version to publish a release."

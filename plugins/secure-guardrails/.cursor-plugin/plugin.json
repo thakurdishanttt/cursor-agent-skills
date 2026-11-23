@@ -1,0 +1,11 @@
+{
+  "name": "secure-guardrails",
+  "version": "1.0.0",
+  "description": "Deterministic security hooks for Cursor: block credentials in prompts and MCP calls, deny reading secret files, block dangerous shell commands and require approval for irreversible ones. Requires Python 3.",
+  "author": { "name": "Thakur Dishant Kumar", "email": "thakurdishant1853@gmail.com" },
+  "homepage": "https://github.com/thakurdishanttt/cursor-agent-skills",
+  "repository": "https://github.com/thakurdishanttt/cursor-agent-skills",
+  "license": "SEE LICENSE IN LICENSE",
+  "keywords": ["security", "hooks", "secrets", "guardrails", "dlp", "enterprise"],
+  "logo": "assets/logo.svg"
+}
